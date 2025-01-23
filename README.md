@@ -27,53 +27,53 @@ npm run lint
 ## 📁 Project Structure
 
 ```
-src/
-│
-├── app/ # Next.js app directory
-│ ├── api/ # API routes
-│ │ ├── beacon/ # Beacon API endpoints
-│ │ └── leaderboard/ # Leaderboard API endpoints
-│ └── leaderboard/ # Leaderboard page
-│
-├── components/
-│ ├── common/ # Shared components
-│ │ ├── Button/
-│ │ ├── Footer/
-│ │ ├── GiphyImage/
-│ │ ├── Header/
-│ │ ├── Instructions/
-│ │ └── UserForm/
-│ ├── Layout/ # Layout component
-│ ├── leaderboard/ # Leaderboard components
-│ └── puzzles/ # Puzzle components
-│ ├── puzzle1/
-│ ├── puzzle2/
-│ ├── puzzle3/
-│ ├── puzzle4/
-│ └── puzzle5/
-│
-├── hooks/ # Custom React hooks
-│
-├── redux/ # Redux store configuration
-│
-├── slices/ # Redux slices
-│
-├── types/ # TypeScript types
-│
-└── utils/ # Utility functions
+  src/
+  │
+  ├── app/ # Next.js app directory
+  │ ├── api/ # API routes
+  │ │    ├── beacon/ # Beacon API endpoints
+  │ │    └── leaderboard/ # Leaderboard API endpoints
+  │ └── leaderboard/ # Leaderboard page
+  │
+  ├── components/
+  │ ├── common/ # Shared components
+  │ │ ├── Button/
+  │ │ ├── Footer/
+  │ │ ├── GiphyImage/
+  │ │ ├── Header/
+  │ │ ├── Instructions/
+  │ │ └── UserForm/
+  │ ├── Layout/ # Layout component
+  │ ├── leaderboard/ # Leaderboard components
+  │ └── puzzles/ # Puzzle components
+  │      ├── puzzle1/
+  │      ├── puzzle2/
+  │      ├── puzzle3/
+  │      ├── puzzle4/
+  │      └── puzzle5/
+  │
+  ├── hooks/ # Custom React hooks
+  │
+  ├── redux/ # Redux store configuration
+  │
+  ├── slices/ # Redux slices
+  │
+  ├── types/ # TypeScript types
+  │
+  └── utils/ # Utility functions
 
-public/
-│
-├── bg/ # Background images
-│
-├── common/ # Common assets
-│ ├── logo.png
-│ └── code-quest.png
-│
-└── puzzle{1-5}/ # Puzzle assets
-├── main.gif
-├── success.gif
-└── failure.gif
+  public/
+  │
+  ├── bg/ # Background images
+  │
+  ├── common/ # Common assets
+  │    ├── logo.png
+  │    └── code-quest.png
+  │
+  └── puzzle{1-5}/ # Puzzle assets
+  ├── main.gif
+  ├── success.gif
+  └── failure.gif
 ```
 
 ## 🧩 Adding a New Puzzle
