@@ -14,7 +14,7 @@ export interface Winner {
 // In-memory storage for winners
 const winnersData: { winners: Winner[] } = { winners: [] }
 
-const SLACK_WEBHOOK_URL = 'https://hooks.slack.com/services/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'
+const SLACK_WEBHOOK_URL = 'https://hooks.slack.com/services/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'
 
 async function sendSlackNotification(winner: Winner) {
   try {
