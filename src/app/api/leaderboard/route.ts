@@ -14,10 +14,17 @@ export interface Winner {
 // In-memory storage for winners
 const winnersData: { winners: Winner[] } = { winners: [] }
 
-const SLACK_WEBHOOK_URL = 'https://hooks.slack.com/services/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'
+// Remove the hardcoded URL and use environment variable
+const SLACK_WEBHOOK_URL = process.env.SLACK_WEBHOOK_URL
 
 async function sendSlackNotification(winner: Winner) {
   try {
+    // Check if webhook URL is configured
+    if (!SLACK_WEBHOOK_URL) {
+      console.warn('Slack webhook URL not configured')
+      return
+    }
+
     const formattedTime = winner.time.includes(':') ? winner.time : `${Math.floor(parseInt(winner.time) / 60)}:${(parseInt(winner.time) % 60).toString().padStart(2, '0')}`
     
     const message = {
