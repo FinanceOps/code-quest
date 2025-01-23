@@ -10,7 +10,7 @@ const Instructions = ({ steps }: Props) => {
     <Box
       sx={{
         height: '100%',
-        minWidth: '480px',
+        minWidth: '320px',
         bgcolor: 'rgba(0, 0, 0, 0.9)',
         color: 'white',
         fontSize: '1.3rem',

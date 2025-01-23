@@ -23,6 +23,10 @@ export const usePuzzle = () => {
   }
 
   const retry = () => {
+    // Increment retries in localStorage
+    const currentRetries = parseInt(localStorage.getItem('retries') || '0')
+    localStorage.setItem('retries', (currentRetries + 1).toString())
+    
     location.reload()
   }
 

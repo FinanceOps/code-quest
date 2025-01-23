@@ -1,15 +1,17 @@
-const tokens = require('./tokens.json')
+import tokens from './tokens.json'
 export const secret = 'quillbot-beacon-signal-key'
 
+const typedTokens: { [key: string]: string } = tokens
+
 export function verifyAnswer(token: string, answer: string) {
-  return tokens[token] === answer
+  return typedTokens[token] === answer
 }
 
 export function getRandomToken() {
-  const keys = Object.keys(tokens)
-  return keys[getRandomInt(100)]
+  const keys = Object.keys(typedTokens)
+  return keys[getRandomInt(keys.length)]
 }
 
-function getRandomInt(max) {
+function getRandomInt(max: number) {
   return Math.floor(Math.random() * max)
 }

@@ -25,9 +25,19 @@ const Puzzle3 = () => {
   const [token, setToken] = useState('')
 
   useEffect(() => {
-    fetch('/api/beacon')
-      .then((response) => response.json())
-      .then((data) => setToken(data.token))
+    // Check localStorage first
+    const storedToken = localStorage.getItem('beacon-token')
+    if (storedToken) {
+      setToken(storedToken)
+    } else {
+      // Only fetch new token if none exists
+      fetch('/api/beacon')
+        .then((response) => response.json())
+        .then((data) => {
+          setToken(data.token)
+          localStorage.setItem('beacon-token', data.token)
+        })
+    }
   }, [])
 
   useEffect(() => {
@@ -41,18 +51,21 @@ const Puzzle3 = () => {
     fetch('/api/beacon', {
       method: 'POST',
       headers: {
-        'x-quill-token': token,
-        'x-quill-answer': answer,
+        'x-token': token,
+        'x-answer': answer,
       },
     })
       .then((res) => {
-        if (res.status === 200) {
-          success()
-        } else {
-          failure()
-        }
+        return res.json().then(data => {
+          if (res.status === 200) {
+            success()
+          } else {
+            failure()
+          }
+        })
       })
-      .catch(() => {
+      .catch((error) => {
+        console.error('Request error:', error)
         failure()
       })
   }

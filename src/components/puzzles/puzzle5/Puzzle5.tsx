@@ -11,7 +11,7 @@ import GiphyImage from '../../common/GiphyImage/GiphyImage'
 import Layout from '../../Layout/Layout'
 import { shuffle } from '../../../utils/array-utils'
 
-type PuzzlePiece = typeof puzzlePieces[number]
+export type PuzzlePiece = typeof puzzlePieces[number]
 
 const puzzlePieces = [
   'daa1838',
@@ -66,7 +66,7 @@ const Puzzle5 = () => {
   useEffect(() => {
     if (status === states.IN_PROGRESS) {
       dispatch(setTitle('Puzzle 5: Jigsaw Puzzle'))
-      dispatch(setTimer(600))
+      dispatch(setTimer(300))
     }
   }, [status, dispatch])
 

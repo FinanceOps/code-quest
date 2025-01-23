@@ -27,5 +27,4 @@ export const store = configureStore({
     puzzle: puzzleReducer,
   },
   preloadedState: initialState,
-  devTools: process.env.NODE_ENV !== 'production',
 })

@@ -3,31 +3,39 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { setStatus, states } from '../../../../slices/puzzleSlice'
 import { setTimer } from '../../../../slices/footerSlice'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { RootState } from '@/redux/store'
 import { Box, Typography } from '@mui/material'
 
 const TimeBar = () => {
   const dispatch = useDispatch()
-  const timer = useSelector((state: RootState) => state.footer.timer)
+  const initialTimer = useSelector((state: RootState) => state.footer.timer)
+  const [remainingTime, setRemainingTime] = useState(initialTimer)
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
-    if (timer > 0) {
+    setRemainingTime(initialTimer)
+  }, [initialTimer])
+
+  useEffect(() => {
+    if (remainingTime > 0) {
       intervalRef.current = setInterval(() => {
-        dispatch(setTimer(timer - 1))
-        
-        if (timer <= 1) {
-          if (intervalRef.current) clearInterval(intervalRef.current)
-          dispatch(setStatus(states.FAILURE))
-        }
+        setRemainingTime(prev => {
+          const newTime = prev - 1
+          if (newTime <= 0) {
+            if (intervalRef.current) clearInterval(intervalRef.current)
+            dispatch(setStatus(states.FAILURE))
+            dispatch(setTimer(0))
+          }
+          return newTime
+        })
       }, 1000)
 
       return () => {
         if (intervalRef.current) clearInterval(intervalRef.current)
       }
     }
-  }, [timer, dispatch])
+  }, [dispatch, remainingTime])
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60)
@@ -41,7 +49,7 @@ const TimeBar = () => {
     return '#ffffff'
   }
 
-  const percentage = (timer / 180) * 100
+  const percentage = (remainingTime / initialTimer) * 100
 
   return (
     <Box sx={{ width: '100%', position: 'relative', p:1, }}>
@@ -74,7 +82,7 @@ const TimeBar = () => {
           fontWeight: 'bold'
         }}
       >
-        {formatTime(timer)}
+        {formatTime(remainingTime)}
       </Typography>
     </Box>
   )

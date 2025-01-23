@@ -15,7 +15,13 @@ interface Winner {
 
 export default function LeaderBoard() {
   const [winners, setWinners] = useState<Winner[]>([])
-  const [password, setPassword] = useState('')
+  const [password, setPassword] = useState(() => {
+    // Initialize password from localStorage if available
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('adminPassword') || ''
+    }
+    return ''
+  })
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [error, setError] = useState('')
 
@@ -35,6 +41,8 @@ export default function LeaderBoard() {
       const data = await response.json()
       setWinners(data)
       setIsAuthenticated(true)
+      // Save password to localStorage on successful authentication
+      localStorage.setItem('adminPassword', password)
     } catch (err) {
       setError('Failed to fetch leaderboard')
     }
@@ -103,6 +111,14 @@ export default function LeaderBoard() {
         maxHeight: '80vh'
       }}
     >
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', px: 2 }}>
+        <Typography variant="h3" sx={{ color: 'white' }}>
+          Leader Board
+        </Typography>
+        <Button onClick={fetchLeaderboard}>
+          Refresh Data
+        </Button>
+      </Box>
       <Table stickyHeader>
         <TableHead>
           <TableRow>
