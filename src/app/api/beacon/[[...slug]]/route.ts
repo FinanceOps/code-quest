@@ -1,9 +1,16 @@
 import { NextRequest } from 'next/server'
 import { verify } from 'jsonwebtoken'
-import { getRandomToken, secret, verifyAnswer } from '@/utils/token-utils'
+import { getTokenByIndex, secret, verifyAnswer } from '@/utils/token-utils'
 
-export async function GET() {
-  const token = getRandomToken()
+export async function GET(request: NextRequest) {
+  // Extract index from the URL path
+  const pathname = request.nextUrl.pathname
+  const index = parseInt(pathname.split('/').pop() || '0')
+  
+  // Ensure index is between 0-99
+  const safeIndex = Math.min(Math.max(index, 0), 99)
+  
+  const token = getTokenByIndex(safeIndex)
   return Response.json({
     token,
   })

@@ -18,6 +18,7 @@ const steps = [
 ]
 
 const Puzzle3 = () => {
+  const tokenIndex = Math.floor(Math.random() * 100)
   const dispatch = useDispatch()
   const { status } = useSelector((state: any) => state.puzzle)
   const [answer, setAnswer] = useState('')
@@ -25,19 +26,24 @@ const Puzzle3 = () => {
   const [token, setToken] = useState('')
 
   useEffect(() => {
-    // Check localStorage first
-    const storedToken = localStorage.getItem('beacon-token')
-    if (storedToken) {
-      setToken(storedToken)
-    } else {
-      // Only fetch new token if none exists
-      fetch('/api/beacon')
+    // Initial fetch
+    fetch(`/api/beacon/${tokenIndex}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setToken(data.token)
+      })
+
+    // Set up interval to fetch every 5 seconds
+    const interval = setInterval(() => {
+      fetch(`/api/beacon/${tokenIndex}`)
         .then((response) => response.json())
         .then((data) => {
           setToken(data.token)
-          localStorage.setItem('beacon-token', data.token)
         })
-    }
+    }, 5000)
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(interval)
   }, [])
 
   useEffect(() => {

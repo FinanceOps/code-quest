@@ -15,3 +15,12 @@ export function getRandomToken() {
 function getRandomInt(max: number) {
   return Math.floor(Math.random() * max)
 }
+
+export function getTokenByIndex(index: number) {
+  // Get all tokens as an array
+  const tokenArray = Object.keys(typedTokens)
+  // Ensure index is within bounds
+  const safeIndex = index % tokenArray.length
+  // Return token at that index
+  return tokenArray[safeIndex]
+}
