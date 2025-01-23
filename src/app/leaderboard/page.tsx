@@ -11,7 +11,7 @@ export default function LeaderBoardPage() {
         backgroundImage: 'url("/bg/4.jpg")',
         backgroundSize: 'cover',
         display: 'flex',
-        alignItems: 'center',
+        p:4,
         justifyContent: 'center'
       }}
     >

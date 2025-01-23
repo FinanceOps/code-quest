@@ -1,7 +1,7 @@
 'use client'
 
-import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Paper, TextField } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material'
+import { useState } from 'react'
 import Button from '../common/Button/Button'
 
 interface Winner {
@@ -55,11 +55,13 @@ export default function LeaderBoard() {
       <Box
         sx={{
           bgcolor: 'rgba(0, 0, 0, 0.8)',
-          p: 4,
-          borderRadius: 2,
           color: 'white',
           width: '90%',
-          maxWidth: '400px'
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          p:4,
+          borderRadius: 4
         }}
       >
         <Typography variant="h5" align="center" sx={{ mb: 3 }}>
