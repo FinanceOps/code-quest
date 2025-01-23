@@ -50,7 +50,6 @@ const TimeBar = () => {
   }
 
   const percentage = (remainingTime / initialTimer) * 100
-
   return (
     <Box sx={{ width: '100%', position: 'relative', p:1, }}>
       <Box

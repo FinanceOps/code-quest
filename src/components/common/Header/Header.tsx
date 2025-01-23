@@ -27,8 +27,21 @@ const Header = () => {
         gap: 2,
         justifyContent: 'space-between',
         bgcolor: 'white',
-        width: '100%'
+        width: '100%',
+        position: 'relative',
       }}>
+        <Box 
+          sx={{ 
+            position: 'absolute',
+            bottom: 2,
+            right: 2,
+            fontSize: '0.7rem',
+            color: '#999',
+            userSelect: 'none'
+          }}
+        >
+          v1.0.0
+        </Box>
         <Image
           src="/common/logo.png"
           width={160}

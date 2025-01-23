@@ -33,10 +33,7 @@ const Puzzle1 = () => {
         if (currentTimer <= 1) {
           clearInterval(interval)
           dispatch(setStatus(states.FAILURE))
-          dispatch(setTimer(0))
-        } else {
-          dispatch(setTimer(currentTimer - 1))
-        }
+        } 
       }, 1000)
 
       return () => clearInterval(interval)
