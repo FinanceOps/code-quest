@@ -1,5 +1,3 @@
-import { promises as fs } from 'fs'
-import path from 'path'
 import { NextRequest, NextResponse } from 'next/server'
 
 const ADMIN_PASSWORD = 'hLW*RuCP%CP@vWh*58HNM5HCx@jPKGN7QysTb#BF&' // Change this to your desired password
@@ -13,31 +11,63 @@ export interface Winner {
   totalTime: number
 }
 
-async function getWinnersFile() {
-  try {
-    const filePath = path.join(process.cwd(), 'winners.json')
-    const fileContent = await fs.readFile(filePath, 'utf8')
-    return JSON.parse(fileContent)
-  } catch (error) {
-    // If file doesn't exist or is empty, return default structure
-    return { winners: [] }
-  }
-}
+// In-memory storage for winners
+const winnersData: { winners: Winner[] } = { winners: [] }
 
-async function saveWinnersFile(data: { winners: Winner[] }) {
-  const filePath = path.join(process.cwd(), 'winners.json')
-  // Ensure the data is serializable by converting to plain object
-  const sanitizedData = {
-    winners: data.winners.map(winner => ({
-      name: String(winner.name),
-      email: String(winner.email),
-      time: String(winner.time),
-      completedAt: String(winner.completedAt),
-      retries: Number(winner.retries),
-      totalTime: Number(winner.totalTime)
-    }))
+const SLACK_WEBHOOK_URL = 'https://hooks.slack.com/services/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'
+
+async function sendSlackNotification(winner: Winner) {
+  try {
+    const formattedTime = winner.time.includes(':') ? winner.time : `${Math.floor(parseInt(winner.time) / 60)}:${(parseInt(winner.time) % 60).toString().padStart(2, '0')}`
+    
+    const message = {
+      "blocks": [
+        {
+          "type": "header",
+          "text": {
+            "type": "plain_text",
+            "text": `🎉 ${winner.name} has completed the puzzle! 🎉`,
+            "emoji": true
+          }
+        },
+        {
+          "type": "section",
+          "fields": [
+            {
+              "type": "mrkdwn",
+              "text": `*Email:*\n${winner.email}`
+            },
+            {
+              "type": "mrkdwn",
+              "text": `*Completion Time:*\n${formattedTime}`
+            },
+            {
+              "type": "mrkdwn",
+              "text": `*Number of Retries:*\n${winner.retries}`
+            },
+            {
+              "type": "mrkdwn",
+              "text": `*Total Time Spent:*\n${Math.round(winner.totalTime / 60)} minutes`
+            },
+            {
+              "type": "mrkdwn",
+              "text": `*Completed At:*\n${new Date(winner.completedAt).toLocaleString()}`
+            }
+          ]
+        }
+      ]
+    }
+
+    await fetch(SLACK_WEBHOOK_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(message)
+    })
+  } catch (error) {
+    console.error('Error sending Slack notification:', error)
   }
-  await fs.writeFile(filePath, JSON.stringify(sanitizedData, null, 2))
 }
 
 export async function GET(request: NextRequest) {
@@ -48,9 +78,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const data = await getWinnersFile()
-    // Ensure we're returning a serializable array
-    const sanitizedWinners = data.winners.map((winner: Winner) => ({
+    // Return sanitized winners directly from memory
+    const sanitizedWinners = winnersData.winners.map((winner: Winner) => ({
       name: String(winner.name),
       email: String(winner.email),
       time: String(winner.time),
@@ -77,16 +106,9 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
-
-    let data = await getWinnersFile()
-    
-    // Ensure data has the correct structure
-    if (!data || !Array.isArray(data.winners)) {
-      data = { winners: [] }
-    }
     
     // Find existing entry by email
-    const existingIndex = data.winners.findIndex((w: Winner) => w.email === email)
+    const existingIndex = winnersData.winners.findIndex((w: Winner) => w.email === email)
     const newWinner: Winner = {
       name: String(name),
       email: String(email),
@@ -97,15 +119,17 @@ export async function POST(request: NextRequest) {
     }
     
     if (existingIndex >= 0) {
-      data.winners[existingIndex] = newWinner // Update existing entry
+      winnersData.winners[existingIndex] = newWinner // Update existing entry
     } else {
-      data.winners.push(newWinner) // Add new entry
+      winnersData.winners.push(newWinner) // Add new entry
     }
     
-    await saveWinnersFile(data)
+    // Send Slack notification
+    await sendSlackNotification(newWinner)
+    
     return NextResponse.json(newWinner)
   } catch (error) {
     console.error('Error adding winner:', error)
     return NextResponse.json({ error: 'Failed to add winner' }, { status: 500 })
   }
-} 
+}
