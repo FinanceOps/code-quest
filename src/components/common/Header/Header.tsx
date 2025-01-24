@@ -40,7 +40,7 @@ const Header = () => {
             userSelect: 'none'
           }}
         >
-          v1.0.3
+          v1.0.4
         </Box>
         <Image
           src="/common/logo.png"
