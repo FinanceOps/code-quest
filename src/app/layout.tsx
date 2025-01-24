@@ -16,6 +16,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Code Quest",
   description: "A puzzle game",
+  icons: {
+    icon: '/financeops.ico',
+  },
 };
 
 export default function RootLayout({

@@ -12,6 +12,26 @@ export default function UserForm({ onSubmit }: UserFormProps) {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
 
+  const handleSubmit = async () => {
+    try {
+      // Send notification to Slack
+      await fetch('/api/slack', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, email })
+      })
+      
+      // Call the original onSubmit
+      onSubmit(name, email)
+    } catch (error) {
+      console.error('Error sending start notification:', error)
+      // Still continue with the challenge even if notification fails
+      onSubmit(name, email)
+    }
+  }
+
   return (
     <Box sx={{ 
       display: 'flex', 
@@ -43,7 +63,7 @@ export default function UserForm({ onSubmit }: UserFormProps) {
         sx={{ input: { color: 'white' } }}
       />
       <Button 
-        onClick={() => onSubmit(name, email)}
+        onClick={handleSubmit}
         disabled={!name || !email}
       >
         Start Challenge
