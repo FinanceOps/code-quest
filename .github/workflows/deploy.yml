@@ -54,6 +54,11 @@ jobs:
         run: |
           npm i
 
+      - name: setup environment variable
+        run: |
+          result=$(aws ssm get-parameter --name "CODE_QUEST_SLACK_WEBHOOK_URL" --query "Parameter.Value" --output text --region ${{ env.AWS_REGION }} --with-decryption)
+          echo "SLACK_WEBHOOK_URL=$(echo $result)" >> $GITHUB_ENV
+
       - name: Build website service
         run: |
           npm run build
