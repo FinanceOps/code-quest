@@ -1,0 +1,78 @@
+name: 'Deployment'
+
+on:
+  push:
+    branches: ['main']
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  AWS_ROLE_ARN: ${{ secrets.AWS_PROD_ROLE_ARN }}
+  AWS_ECS_CLUSTER_NAME: ${{ secrets.LANDING_ECS_CLUSTER_NAME }}
+  BACKEND_S3_BUCKET_NAME: ${{ secrets.PROD_BACKEND_S3_BUCKET_NAME }}
+  NODE_ENV: production
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deployment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git clone the repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          role-session-name: code-quest-deploy
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: setup node version
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.18.0
+
+      - name: Cache npm dependencies
+        id: npm-cache-step
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install Prerequisites
+        if: steps.npm-cache-step.outputs.cache-hit != 'true'
+        run: |
+          npm i
+
+      - name: setup environment variable
+        run: |
+          result=$(aws ssm get-parameter --name "CODE_QUEST_SLACK_WEBHOOK_URL" --query "Parameter.Value" --output text --region ${{ env.AWS_REGION }} --with-decryption)
+          echo "SLACK_WEBHOOK_URL=$(echo $result)" >> $GITHUB_ENV
+
+      - name: Build website service
+        run: |
+          npm run build
+
+      - name: Create the Zip files
+        run: |
+          rm -rf ./.next/cache
+          zip -r code-quest-service-${{ github.sha }}.zip ./.next/ ./package.json ./public
+
+      - name: Copy zip file to S3 bucket
+        run: |
+          aws s3 cp code-quest-service-${{ github.sha }}.zip s3://${{ env.BACKEND_S3_BUCKET_NAME }}/code-quest/code-quest-service-${{ github.sha }}.zip
+
+      - name: Deploy website
+        run: |
+          sleep 10
+          aws ecs update-service --cluster ${{ env.AWS_ECS_CLUSTER_NAME }} --service code-quest --force-new-deployment  --region ${{ env.AWS_REGION }}
