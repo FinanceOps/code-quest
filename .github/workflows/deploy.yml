@@ -73,15 +73,3 @@ jobs:
       - name: Deploy website
         run: |
           aws ecs update-service --cluster ${{ env.AWS_ECS_CLUSTER_NAME }} --service code-quest --force-new-deployment  --region ${{ env.AWS_REGION }}
-          aws ecs wait services-stable --cluster ${{ env.AWS_ECS_CLUSTER_NAME }} --services code-quest --region ${{ env.AWS_REGION }}
-
-      - name: Notify deployment status
-        if: always()
-        uses: slackapi/slack-github-action@v1.24.0
-        with:
-          payload: |
-            {
-              "text": "${{ job.status == 'success' && '✅ Deployment successful' || '❌ Deployment failed' }} - ${{ github.repository }}"
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ env.SLACK_WEBHOOK_URL }}
