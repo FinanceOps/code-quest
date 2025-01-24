@@ -56,19 +56,16 @@ jobs:
 
       - name: Build website service
         run: |
-          NODE_ENV=production SLACK_WEBHOOK_URL=${{ env.SLACK_WEBHOOK_URL }} npm run build
-        continue-on-error: false
+          NODE_ENV=production npm run build
 
       - name: Create the Zip files
         run: |
           rm -rf ./.next/cache
           zip -r code-quest-service-${{ github.sha }}.zip ./.next/ ./package.json ./public
-        continue-on-error: false
 
       - name: Copy zip file to S3 bucket
         run: |
           aws s3 cp code-quest-service-${{ github.sha }}.zip s3://${{ env.BACKEND_S3_BUCKET_NAME }}/code-quest/code-quest-service-${{ github.sha }}.zip
-        continue-on-error: false
 
       - name: Deploy website
         run: |
