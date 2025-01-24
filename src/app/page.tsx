@@ -1,4 +1,4 @@
-import StoreProvider from '@/components/StoreProvider'
+import StoreProvider from '../components/StoreProvider'
 import HomeContent from './HomeContent'
 
 export default function Home() {

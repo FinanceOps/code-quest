@@ -1,7 +1,7 @@
 'use client'
 
 import { Box } from '@mui/material'
-import LeaderBoard from '@/components/leaderboard/LeaderBoard'
+import LeaderBoard from '../../components/leaderboard/LeaderBoard'
 
 export default function LeaderBoardPage() {
   return (

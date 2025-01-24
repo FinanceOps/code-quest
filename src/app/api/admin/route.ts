@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-import { secret as tokenSecret } from '@/utils/token-utils'
+import { secret as tokenSecret } from '../../../utils/token-utils'
 
 export async function POST(request: NextRequest) {
   try {

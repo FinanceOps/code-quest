@@ -114,7 +114,7 @@ export default PuzzleN
 3. Add puzzle to `HomeContent.tsx`:
 
 ```typescript
-import PuzzleN from '@/components/puzzles/puzzleN/PuzzleN'
+import PuzzleN from '../components/puzzles/puzzleN/PuzzleN'
 // Add to renderPuzzle switch statement
 case N:
 return <PuzzleN />

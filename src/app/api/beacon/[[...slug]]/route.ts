@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server'
 import { verify } from 'jsonwebtoken'
-import { getTokenByIndex, secret, verifyAnswer } from '@/utils/token-utils'
+import { getTokenByIndex, secret, verifyAnswer } from '../../../../utils/token-utils'
 
 export async function GET(request: NextRequest) {
   // Extract index from the URL path

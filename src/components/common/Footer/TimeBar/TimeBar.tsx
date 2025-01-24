@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { setStatus, states } from '../../../../slices/puzzleSlice'
 import { setTimer } from '../../../../slices/footerSlice'
 import { useEffect, useRef, useState } from 'react'
-import { RootState } from '@/redux/store'
+import { RootState } from '../../../../redux/store'
 import { Box, Typography } from '@mui/material'
 
 const TimeBar = () => {

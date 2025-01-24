@@ -3,7 +3,7 @@
 import { Box, Stack } from '@mui/material'
 import { useSelector } from 'react-redux'
 import Image from 'next/image'
-import { RootState } from '@/types/redux'
+import { RootState } from '../../../redux/store'
 
 const Header = () => {
   const { title } = useSelector((state: RootState) => state.header)
