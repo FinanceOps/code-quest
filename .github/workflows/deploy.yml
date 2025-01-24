@@ -14,6 +14,7 @@ env:
   AWS_ROLE_ARN: ${{ secrets.AWS_PROD_ROLE_ARN }}
   AWS_ECS_CLUSTER_NAME: ${{ secrets.LANDING_ECS_CLUSTER_NAME }}
   BACKEND_S3_BUCKET_NAME: ${{ secrets.PROD_BACKEND_S3_BUCKET_NAME }}
+  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
 permissions:
   id-token: write
@@ -53,25 +54,34 @@ jobs:
         run: |
           npm i
 
-      - name: setup environment variable
-        run: |
-          result=$(aws ssm get-parameter --name "CODE_QUEST_SLACK_WEBHOOK_URL" --query "Parameter.Value" --output text --region ${{ env.AWS_REGION }} --with-decryption)
-          echo "SLACK_WEBHOOK_URL=$(echo $result)" >> $GITHUB_ENV
-
       - name: Build website service
         run: |
-          NODE_ENV=production SLACK_WEBHOOK_URL=${{ env.SLACK_WEBHOOK_URL }} npm run build
+          NODE_ENV=production npm run build
+        continue-on-error: false
 
       - name: Create the Zip files
         run: |
           rm -rf ./.next/cache
           zip -r code-quest-service-${{ github.sha }}.zip ./.next/ ./package.json ./public
+        continue-on-error: false
 
       - name: Copy zip file to S3 bucket
         run: |
           aws s3 cp code-quest-service-${{ github.sha }}.zip s3://${{ env.BACKEND_S3_BUCKET_NAME }}/code-quest/code-quest-service-${{ github.sha }}.zip
+        continue-on-error: false
 
       - name: Deploy website
         run: |
-          sleep 10
           aws ecs update-service --cluster ${{ env.AWS_ECS_CLUSTER_NAME }} --service code-quest --force-new-deployment  --region ${{ env.AWS_REGION }}
+          aws ecs wait services-stable --cluster ${{ env.AWS_ECS_CLUSTER_NAME }} --services code-quest --region ${{ env.AWS_REGION }}
+
+      - name: Notify deployment status
+        if: always()
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          payload: |
+            {
+              "text": "${{ job.status == 'success' && '✅ Deployment successful' || '❌ Deployment failed' }} - ${{ github.repository }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ env.SLACK_WEBHOOK_URL }}
