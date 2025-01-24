@@ -60,7 +60,7 @@ jobs:
 
       - name: Build website service
         run: |
-          NODE_ENV=production npm run build --verbose
+          NODE_ENV=production SLACK_WEBHOOK_URL=${{ env.SLACK_WEBHOOK_URL }} npm run build
 
       - name: Create the Zip files
         run: |
