@@ -61,7 +61,7 @@ jobs:
 
       - name: Build website service
         run: |
-          npm run build
+          npm run build --verbose
 
       - name: Create the Zip files
         run: |
